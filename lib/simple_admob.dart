@@ -1,5 +1,5 @@
-
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
@@ -8,22 +8,36 @@ class SimpleAdmob {
       const MethodChannel('com.github.gnudles/simple_admob');
 
   static Future<bool> initBanner(String unitId) async {
-    final String status = await _channel.invokeMethod('initBanner',<String, dynamic>{
+    bool ok = false;
+    if (Platform.isAndroid) {
+      ok = await _channel.invokeMethod('initBanner', <String, dynamic>{
         'unitId': unitId,
       });
-    return status;
+    }
+    return ok;
   }
+
   static Future<bool> showBanner() async {
-    final bool ok = await _channel.invokeMethod('showBanner');
+    bool ok = false;
+    if (Platform.isAndroid) {
+      ok = await _channel.invokeMethod('showBanner');
+    }
     return ok;
   }
+
   static Future<bool> hideBanner() async {
-    final bool ok = await _channel.invokeMethod('hideBanner');
+    bool ok = false;
+    if (Platform.isAndroid) {
+      ok = await _channel.invokeMethod('hideBanner');
+    }
     return ok;
   }
+
   static Future<bool> destroyBanner() async {
-    final bool ok = await _channel.invokeMethod('destroyBanner');
+    bool ok = false;
+    if (Platform.isAndroid) {
+      ok = await _channel.invokeMethod('destroyBanner');
+    }
     return ok;
   }
 }
-
