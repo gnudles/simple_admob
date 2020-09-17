@@ -53,11 +53,20 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
     pluginBinding=flutterPluginBinding;
   }
-
+  final AdSize  sizes [] = {
+  AdSize.FLUID,
+  AdSize.FULL_BANNER,
+  AdSize.BANNER,
+  AdSize.LARGE_BANNER,
+  AdSize.LEADERBOARD,
+  AdSize.MEDIUM_RECTANGLE,
+  AdSize.WIDE_SKYSCRAPER
+  };
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("initBanner")) {
-      //String size = call.argument("size");
+
+      AdSize size = sizes[call.argument("size")];
 
       MobileAds.initialize(_activity, new OnInitializationCompleteListener() {
         @Override
@@ -69,7 +78,7 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
       _adView = new AdView(_activity);
 
-      _adView.setAdSize(AdSize.FULL_BANNER);
+      _adView.setAdSize(size);
 
       String unitId = call.argument("unitId");
       if (unitId.equals("test"))

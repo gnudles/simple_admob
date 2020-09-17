@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      print(await SimpleAdmob.initBanner("test"));
+      print(await SimpleAdmob.initBanner("test",BannerSize.LARGE_BANNER_320x100));
       await SimpleAdmob.showBanner();
       platformVersion = "hi";
     } on PlatformException {
