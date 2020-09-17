@@ -2,6 +2,7 @@ package com.github.gnudles.simple_admob;
 
 import android.app.Activity;
 
+import android.util.Size;
 import android.view.View;
 import android.view.Gravity;
 import android.content.Context;
@@ -37,6 +38,8 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
   private MethodChannel _channel;
   private Activity _activity;
   private AdView _adView;
+  private AdSize _adSize;
+  private Size _adPixelSize;
   LinearLayout _layout;
   private FlutterPluginBinding pluginBinding;
 
@@ -53,8 +56,7 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
     pluginBinding=flutterPluginBinding;
   }
-  final AdSize  sizes [] = {
-  AdSize.FLUID,
+  final AdSize  adSizesMap [] = {
   AdSize.FULL_BANNER,
   AdSize.BANNER,
   AdSize.LARGE_BANNER,
@@ -62,11 +64,20 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
   AdSize.MEDIUM_RECTANGLE,
   AdSize.WIDE_SKYSCRAPER
   };
+  final Size  adPixelSizesMap [] = {
+          new Size(468,60),
+          new Size(320,50),
+          new Size(320,100),
+          new Size(728,90),
+          new Size(300,250),
+          new Size(160,600)
+  };
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("initBanner")) {
-
-      AdSize size = sizes[call.argument("size")];
+      int sizeKey = (int)call.argument("size");
+      _adSize = adSizesMap[sizeKey];
+      _adPixelSize = adPixelSizesMap[sizeKey];
 
       MobileAds.initialize(_activity, new OnInitializationCompleteListener() {
         @Override
@@ -75,10 +86,14 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
         }
       });
 
-
+      if (_adView!=null)
+      {
+        _adView.destroy();
+        _layout.removeAllViews();
+      }
       _adView = new AdView(_activity);
 
-      _adView.setAdSize(size);
+      _adView.setAdSize(_adSize);
 
       String unitId = call.argument("unitId");
       if (unitId.equals("test"))
@@ -95,29 +110,19 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
       
       
        {
-         int anchorType =Gravity.BOTTOM;
-         int horizontalCenterOffset=0;
-         int anchorOffset= 0;
-        _layout = new LinearLayout(_activity);
-        _layout.setOrientation(LinearLayout.VERTICAL);
-        _layout.setGravity(anchorType);
-        _layout.addView(_adView);
-        final float scale = _activity.getResources().getDisplayMetrics().density;
-
-        int left = horizontalCenterOffset > 0 ? (int) (horizontalCenterOffset * scale) : 0;
-        int right =
-            horizontalCenterOffset < 0 ? (int) (Math.abs(horizontalCenterOffset) * scale) : 0;
-        if (anchorType == Gravity.BOTTOM) {
-          _layout.setPadding(left, 0, right, (int) (anchorOffset * scale));
-        } else {
-          _layout.setPadding(left, (int) (anchorOffset * scale), right, 0);
-        }
-
-        _activity.addContentView(
+        int anchorType =Gravity.TOP;
+        if (_layout == null)
+        {
+            _layout = new LinearLayout(_activity);
+            _activity.addContentView(
             _layout,
             new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                _layout.setVisibility (View.INVISIBLE);
+        }
+        _layout.setOrientation(LinearLayout.VERTICAL);
+        _layout.setGravity(anchorType);
+        _layout.addView(_adView);
+        _layout.setVisibility (View.INVISIBLE);
       }
       result.success(true);
 
@@ -135,13 +140,28 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
       }
     }
     else if (call.method.equals("showBanner")) {
-      
+      double x = (double)call.argument("x");
+      boolean alignBottom = (boolean)call.argument("bottom");
+      int verticalAnchor = (int)call.argument("anchor");
+      final float scale = _activity.getResources().getDisplayMetrics().density;
+      int left = (int)(((x+1.0)/2.0)*(_activity.getResources().getDisplayMetrics().widthPixels-scale*_adPixelSize.getWidth()));
+      //int top = (int)(((y+1.0)/2.0)*(_activity.getResources().getDisplayMetrics().heightPixels-scale*_adPixelSize.getHeight()));
+      //int bottom = _activity.getResources().getDisplayMetrics().heightPixels - top - _adPixelSize.getHeight();
+      int right = _activity.getResources().getDisplayMetrics().widthPixels - left - (int)(scale*_adPixelSize.getWidth());
+      int top = alignBottom?0:(int)(verticalAnchor*scale);
+      int bottom = alignBottom?(int)(verticalAnchor*scale):0;
+      _layout.setGravity(alignBottom?Gravity.BOTTOM:Gravity.TOP);
+      _layout.setPadding(left,top,right,bottom);
+      //_activity.getResources().getDisplayMetrics().heightPixels;
+      //_activity.getResources().getDisplayMetrics().heightPixels;
+
       _layout.setVisibility (View.VISIBLE);
       _adView.resume();
       result.success(true);
     }
     else if (call.method.equals("destroyBanner")) {
       _layout.removeAllViews();
+      
       _adView.destroy();
 
       
@@ -156,6 +176,11 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     _channel.setMethodCallHandler(null);
+    if (_adView!=null)
+    {
+      _layout.removeAllViews();
+      _adView.destroy();
+    }
     pluginBinding = null;
   }
 
@@ -175,8 +200,14 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
   }
   @Override
   public void onDetachedFromActivity() {
-
+    if (_adView!=null)
+    {
+      _layout.removeAllViews();
+      _adView.destroy();
+    }
     _activity = null;
+    _layout = null;
+    _adView = null;
   }
 }
 

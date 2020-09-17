@@ -27,12 +27,14 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      print(await SimpleAdmob.initBanner("test",BannerSize.LARGE_BANNER_320x100));
-      await SimpleAdmob.showBanner();
+      print(await SimpleAdmob.initBanner(
+          "test", SimpleBannerSize.LARGE_BANNER_320x100));
+      await SimpleAdmob.showBanner(SimpleBannerPosition.bottomCenter(0));
       platformVersion = "hi";
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
+    
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -45,27 +47,34 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void dispose() {
+    SimpleAdmob.destroyBanner();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(child: Row(children:[RaisedButton(
-          child: Text("hide"),
-          onPressed: () async {
-            await SimpleAdmob.hideBanner();
-          },
-        ),
-        RaisedButton(
-          child: Text("show"),
-          onPressed: () async {
-            await SimpleAdmob.showBanner();
-          },
-        ),
-        ]
-        ),
-      )),
+          appBar: AppBar(
+            title: const Text('Plugin example app'),
+          ),
+          body: Center(
+            child: Row(children: [
+              RaisedButton(
+                child: Text("hide"),
+                onPressed: () async {
+                  await SimpleAdmob.hideBanner();
+                },
+              ),
+              RaisedButton(
+                child: Text("show"),
+                onPressed: () async {
+                  await SimpleAdmob.showBanner(SimpleBannerPosition.bottomLeft(50));
+                },
+              ),
+            ]),
+          )),
     );
   }
 }
