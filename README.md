@@ -24,7 +24,7 @@ don't forget to add in the AndroidManifest.xml
 ```
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~4354546703"/>
+            android:value="ca-app-pub-yyyyyyyyyyyyyy/xxxxxxxxx"/>
     </application>
 </manifest>
 ```
