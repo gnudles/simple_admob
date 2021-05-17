@@ -45,6 +45,14 @@ class SimpleBannerPosition {
 class SimpleAdmob {
   static const MethodChannel _channel =
       const MethodChannel('com.github.gnudles/simple_admob');
+  SimpleAdmob() {
+    _channel.setMethodCallHandler(callHandler);
+  }
+  static Future<dynamic>? callHandler(MethodCall call) {
+    print(call.method);
+    print(call.arguments);
+    return null;
+  }
 
   static Future<bool> initBanner(
     String unitId, [
@@ -58,7 +66,9 @@ class SimpleAdmob {
     return ok;
   }
 
-  static Future<bool> showBanner([SimpleBannerPosition position = SimpleBannerPosition.defaultPosition]) async {
+  static Future<bool> showBanner(
+      [SimpleBannerPosition position =
+          SimpleBannerPosition.defaultPosition]) async {
     bool ok = false;
     if (Platform.isAndroid) {
       ok = await _channel.invokeMethod('showBanner', <String, dynamic>{
