@@ -48,10 +48,10 @@ class SimpleAdmob {
   SimpleAdmob() {
     _channel.setMethodCallHandler(callHandler);
   }
-  static Future<dynamic>? callHandler(MethodCall call) {
+  static Future<dynamic> callHandler(MethodCall call) {
     print(call.method);
     print(call.arguments);
-    return null;
+    return Future(()=>null);
   }
 
   static Future<bool> initBanner(
