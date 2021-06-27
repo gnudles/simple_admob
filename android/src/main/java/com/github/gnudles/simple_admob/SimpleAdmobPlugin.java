@@ -135,7 +135,7 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
           // to the app after tapping on an ad.
         }
       });
-);
+
 
       _adView.setAdSize(_adSize);
 
