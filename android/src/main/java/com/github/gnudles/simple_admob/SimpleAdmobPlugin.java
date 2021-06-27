@@ -102,7 +102,9 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
         String _unitId = captureUnitId;
         @Override
         public void onAdLoaded() {
-          _channel.invokeMethod("onAdLoaded",_unitId);
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          _channel.invokeMethod("onAdLoaded",arguments);
         }
 
         @Override
