@@ -1,6 +1,7 @@
 package com.github.gnudles.simple_admob;
 
 import android.app.Activity;
+import java.util.HashMap;
 
 import android.util.Size;
 import android.view.View;
@@ -106,31 +107,42 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
         @Override
         public void onAdFailedToLoad(LoadAdError adError) {
-          _channel.invokeMethod("onAdFailedToLoad",_unitId,adError.toString());
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          arguments.put("error", adError.toString());
+          _channel.invokeMethod("onAdFailedToLoad",arguments);
         }
 
         @Override
         public void onAdOpened() {
-          _channel.invokeMethod("onAdOpened",_unitId);
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          _channel.invokeMethod("onAdOpened",arguments);
           // Code to be executed when an ad opens an overlay that
           // covers the screen.
         }
 
         @Override
         public void onAdClicked() {
-          _channel.invokeMethod("onAdClicked",_unitId);
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          _channel.invokeMethod("onAdClicked",arguments);
           // Code to be executed when the user clicks on an ad.
         }
 
         @Override
         public void onAdLeftApplication() {
-          _channel.invokeMethod("onAdLeftApplication",_unitId);
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          _channel.invokeMethod("onAdLeftApplication",arguments);
           // Code to be executed when the user has left the app.
         }
 
         @Override
         public void onAdClosed() {
-          _channel.invokeMethod("onAdClosed",_unitId);
+          HashMap<String, Object> arguments = new HashMap<>();
+          arguments.put("unitId", _unitId);
+          _channel.invokeMethod("onAdClosed",arguments);
           // Code to be executed when the user is about to return
           // to the app after tapping on an ad.
         }
@@ -139,7 +151,7 @@ public class SimpleAdmobPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
       _adView.setAdSize(_adSize);
 
-      String unitId = call.argument("unitId");
+
       if (unitId.equals("test"))
       {
         unitId="ca-app-pub-3940256099942544/8865242552";
